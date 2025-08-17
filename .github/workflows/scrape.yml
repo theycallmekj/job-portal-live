@@ -1,35 +1,53 @@
+# Workflow name
 name: Run Scraper and Update Data
 
+# Controls when the action will run
 on:
+  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+
+  # Runs on a schedule
   schedule:
+    # Runs every 6 hours (at 00:00, 06:00, 12:00, 18:00 UTC)
     - cron: '0 */6 * * *'
 
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   scrape-and-update:
+    # The type of runner that the job will run on
     runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
+      # 1. Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # 2. Sets up a Python environment for use in actions
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
+      # 3. Installs the required Python libraries for the scraper
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install requests beautifulsoup4 python-dotenv google-generativeai python-dateutil scikit-learn
 
+      # 4. Runs the main scraper script
       - name: Run the scraper
         env:
+          # This securely uses the secret you created in the repository settings
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
         run: python scraper.py
 
+      # 5. Commits the updated data.json and seen_urls.txt back to the repository
+      # This action automatically handles committing and pushing.
       - name: Commit and push changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
+          # The message for the automated commit
           commit_message: "Automated: Scraper data update"
+          # The specific files to commit. Prevents other temporary files from being saved.
           file_pattern: "data.json seen_urls.txt"
-```5.  Scroll to the bottom and click **"Commit changes..."**.
