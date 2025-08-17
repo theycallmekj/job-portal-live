@@ -1,9 +1,34 @@
+// --- NEW: A smarter function to build the correct path ---
+// This will work on both your local PC and the live GitHub Pages site.
+const getBasePath = () => {
+    const path = window.location.pathname;
+    // On GitHub Pages, the path is /repository-name/page.html
+    // We want to get the /repository-name/ part.
+    if (path.split('/')[1]) {
+        const repoName = path.split('/')[1];
+        // Check if we are on the local server or a live server
+        if (window.location.hostname.includes('github.io')) {
+             return `/${repoName}/`;
+        }
+    }
+    // For local testing (file:// or localhost), the base path is just root.
+    return '/';
+};
+
 // Function to fetch and inject HTML content
-const includeHTML = async (elementId, filePath) => {
+const includeHTML = async (elementId, relativePath) => {
+    // --- MODIFIED: Use the base path to create a full, absolute path ---
+    const basePath = getBasePath();
+    // Prevent double slashes if the path starts with one
+    const cleanRelativePath = relativePath.startsWith('/') ? relativePath.substring(1) : relativePath;
+    const filePath = `${basePath}${cleanRelativePath}`;
+
     try {
+        // Use the new, correct filePath for fetching
         const response = await fetch(filePath);
         if (!response.ok) {
-            throw new Error(`Could not load ${filePath}: ${response.statusText}`);
+            // Throw a more informative error
+            throw new Error(`Could not load ${filePath}: ${response.status} ${response.statusText}`);
         }
         const text = await response.text();
         const element = document.getElementById(elementId);
@@ -24,7 +49,6 @@ const initializePage = () => {
         mobileMenuButton.addEventListener('click', () => {
             mobileMenu.classList.toggle('hidden');
         });
-        // Replace the placeholder ID so it doesn't conflict
         mobileMenuButton.id = 'mobile-menu-button';
     }
 
@@ -36,23 +60,26 @@ const initializePage = () => {
         copyrightEl.id = 'copyright';
     }
 
-    // Highlight the active navigation link
-    const currentPath = window.location.pathname.split('/').pop();
+    // --- Highlight the active navigation link ---
+    // This logic needs to be aware of the base path as well
+    const basePath = getBasePath();
+    const currentPath = window.location.pathname;
     const navLinks = document.querySelectorAll('.nav-link');
     
     navLinks.forEach(link => {
-        const linkPath = new URL(link.href).pathname.split('/').pop();
+        // Construct the full expected path for comparison
+        const linkPath = new URL(link.href).pathname;
         const linkCategory = new URL(link.href).searchParams.get('category');
         const currentCategory = new URL(window.location.href).searchParams.get('category');
         
-        // Handle index.html
-        if (currentPath === '' || currentPath === 'index.html') {
+        // Handle index.html - check if the current path ends with the base path or index.html
+        if (currentPath === basePath || currentPath === `${basePath}index.html`) {
             if(link.textContent === 'Home') {
                  link.classList.add('active');
             }
         }
-        // Handle list-page.html based on category
-        else if (linkPath === 'list-page.html' && linkCategory === currentCategory) {
+        // Handle other pages
+        else if (linkPath === currentPath && linkCategory === currentCategory) {
             link.classList.add('active');
         }
     });
@@ -60,6 +87,8 @@ const initializePage = () => {
 
 // Load header and footer, then initialize the page scripts
 document.addEventListener('DOMContentLoaded', async () => {
+    // --- NO CHANGE HERE ---
+    // The relative paths are still correct, the includeHTML function now handles the complexity
     await includeHTML('header-placeholder', '_header.html');
     await includeHTML('footer-placeholder', '_footer.html');
     initializePage();
