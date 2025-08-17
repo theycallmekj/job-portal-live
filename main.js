@@ -1,32 +1,10 @@
-// --- NEW: A smarter function to build the correct path ---
-// This will work on both your local PC and the live GitHub Pages site.
-const getBasePath = () => {
-    const path = window.location.pathname;
-    // On GitHub Pages, the path is /repository-name/page.html
-    // We want to get the /repository-name/ part.
-    if (path.split('/')[1]) {
-        const repoName = path.split('/')[1];
-        // Check if we are on the live server
-        if (window.location.hostname.includes('github.io')) {
-             return `/${repoName}/`;
-        }
-    }
-    // For local testing (file:// or localhost), we don't need a base path.
-    return `/`;
-};
-
 // Function to fetch and inject HTML content
-const includeHTML = async (elementId, relativePath) => {
-    // --- MODIFIED: Use the base path to create a full, absolute path ---
-    const basePath = getBasePath();
-    const filePath = `${basePath}${relativePath}`;
-
+const includeHTML = async (elementId, filePath) => {
     try {
-        // Use the new, correct filePath for fetching
+        // With the <base> tag, a simple relative path now works perfectly everywhere.
         const response = await fetch(filePath);
         if (!response.ok) {
-            // Throw a more informative error
-            throw new Error(`Could not load ${filePath}: ${response.status} ${response.statusText}`);
+            throw new Error(`Could not load ${filePath}: ${response.statusText}`);
         }
         const text = await response.text();
         const element = document.getElementById(elementId);
@@ -59,30 +37,24 @@ const initializePage = () => {
     }
 
     // --- Highlight the active navigation link ---
-    const basePath = getBasePath();
     const currentPath = window.location.pathname;
     const navLinks = document.querySelectorAll('.nav-link');
     
     navLinks.forEach(link => {
         const linkPath = new URL(link.href).pathname;
-        const linkCategory = new URL(link.href).searchParams.get('category');
-        const currentCategory = new URL(window.location.href).searchParams.get('category');
-        
-        // Handle index.html - check if the current path ends with the base path or index.html
-        if (currentPath === basePath || currentPath === `${basePath}index.html`) {
-            if(link.textContent === 'Home') {
-                 link.classList.add('active');
-            }
-        }
-        // Handle other pages
-        else if (linkPath === currentPath && linkCategory === currentCategory) {
-            link.classList.add('active');
+        if (linkPath === currentPath) {
+             link.classList.add('active');
         }
     });
+     // Special case for home page
+    if (currentPath.endsWith('/') || currentPath.endsWith('/index.html')) {
+        document.querySelector('a[href="index.html"]')?.classList.add('active');
+    }
 };
 
 // Load header and footer, then initialize the page scripts
 document.addEventListener('DOMContentLoaded', async () => {
+    // Now these simple paths will be correctly interpreted by the browser
     await includeHTML('header-placeholder', '_header.html');
     await includeHTML('footer-placeholder', '_footer.html');
     initializePage();
