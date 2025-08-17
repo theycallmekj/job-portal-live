@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Items - AapkaRojgar.com</title>
+    <link rel="icon" type="image/png" href="favic.png">
+    <link rel="apple-touch-icon" href="favic.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #eef2f5; }
+        .main-container { background-color: white; border-radius: 0.75rem; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); overflow: hidden; }
+        .page-title { font-size: 2rem; font-weight: 700; color: #1e3a8a; text-align: center; padding: 1.5rem; border-bottom: 1px solid #e5e7eb; text-transform: capitalize; background-color: #dbeafe; }
+        .post-title { font-size: 1.125rem; font-weight: 600; color: #1e3a8a; margin-bottom: 0.25rem; }
+        .post-details { font-size: 0.875rem; color: #4b5563; }
+        .post-details strong { color: #dc2626; font-weight: 600; }
+        .details-button { background-color: #1d4ed8; color: white; padding: 0.6rem 1.25rem; border-radius: 0.5rem; text-decoration: none; font-weight: 600; transition: background-color 0.2s ease; white-space: nowrap; display: block; text-align: center; }
+        .details-button:hover { background-color: #1e40af; }
+        .nav-link.active { background-color: #1e3a8a; color: white; }
+        .main-title-link { text-decoration: none; }
+        .main-title { font-weight: 700; color: #1e3a8a; }
+    </style>
+</head>
+<body>
+    <div id="header-placeholder"></div>
+
+    <main class="container mx-auto px-4 mt-8 mb-12">
+        <div class="main-container">
+            <h1 id="page-title" class="page-title">Loading...</h1>
+            <div id="item-list-container">
+                <p class="p-6 text-center text-gray-500">Loading items...</p>
+            </div>
+        </div>
+    </main>
+    
+    <div id="footer-placeholder"></div>
+    
+    <script src="main.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        (async () => {
+            const container = document.getElementById('item-list-container');
+            const pageTitle = document.getElementById('page-title');
+            const urlParams = new URLSearchParams(window.location.search);
+            const category = urlParams.get('category');
+
+            const isJobActive = (job) => {
+                if (!job.last_date) return true;
+                try {
+                    const today = new Date(); today.setHours(0, 0, 0, 0);
+                    const lastDate = new Date(job.last_date);
+                    if (isNaN(lastDate.getTime())) return true;
+                    return lastDate >= today;
+                } catch (e) { return true; }
+            };
+
+            if (!category) {
+                pageTitle.textContent = "Category Not Found";
+                container.innerHTML = `<p class="p-6 text-center text-gray-500">No category specified.</p>`;
+                return;
+            }
+            
+            const categoryToFileMap = {
+                'latest_jobs': 'latest-jobs.html', 'result': 'details-page.html', 'admit_card': 'details-page.html',
+                'answer_key': 'details-page.html', 'syllabus': 'details-page.html', 'admission': 'details-page.html',
+                'upcoming_jobs': 'details-page.html', 'important_documents': 'details-page.html'
+            };
+
+            const title = category.replace(/_/g, ' ');
+            pageTitle.textContent = `All ${title}`;
+            document.title = `All ${title} - AapkaRojgar.com`;
+
+            const createItemHTML = (item) => {
+                const detailPage = categoryToFileMap[category] || 'index.html';
+                const lastDate = (category === 'latest_jobs' && item.last_date) ? `| Last Date: <strong>${new Date(item.last_date).toLocaleDateString('en-GB')}</strong>` : '';
+                return `
+                    <div class="p-6 border-b border-gray-200 transition hover:bg-gray-50">
+                        <div class="flex flex-col md:flex-row md:items-center">
+                            <div class="flex-grow mb-4 md:mb-0 md:mr-6">
+                                <h2 class="post-title">${item.title}</h2>
+                                <p class="post-details">Click to view more details ${lastDate}</p>
+                            </div>
+                            <div class="flex-shrink-0 w-full md:w-auto">
+                                <a href="${detailPage}?id=${item.id}" class="details-button">View Details</a>
+                            </div>
+                        </div>
+                    </div>`;
+            };
+
+            try {
+                const response = await fetch('data.json');
+                const data = await response.json();
+                let itemList = data[category] || [];
+
+                if (category === 'latest_jobs') {
+                    itemList = itemList.filter(isJobActive);
+                }
+
+                if (itemList.length > 0) {
+                    container.innerHTML = itemList.map(createItemHTML).join('');
+                } else {
+                    container.innerHTML = `<p class="p-6 text-center text-gray-500">No items found in this category.</p>`;
+                }
+            } catch (error) {
+                console.error('Failed to load items:', error);
+                container.innerHTML = `<p class="p-6 text-center text-red-500">Could not load items.</p>`;
+            }
+        })();
+    });
+    </script>
+</body>
+</html>

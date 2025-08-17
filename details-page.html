@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Details - AapkaRojgar.com</title>
+    <link rel="icon" type="image/png" href="favic.png">
+    <link rel="apple-touch-icon" href="favic.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+        .content-wrapper { background-color: white; border-radius: 0.75rem; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); padding: 1.5rem 2rem; }
+        .post-title { color: #1e3a8a; font-weight: 700; margin-bottom: 0.5rem; }
+        .section-title { font-size: 1.5rem; font-weight: 700; color: white; text-align: center; padding: 0.75rem; background-color: #1e3a8a; border-radius: 0.5rem; margin-top: 2.5rem; margin-bottom: 1.5rem; }
+        .link-button { display: flex; align-items: center; justify-content: center; padding: 1rem; font-size: 1.25rem; font-weight: 700; border-radius: 0.5rem; text-decoration: none; color: white; transition: transform 0.2s ease; }
+        .link-button:hover { transform: translateY(-3px); }
+        .info-table th, .info-table td { padding: 0.75rem 1rem; border: 1px solid #e5e7eb; text-align: left; }
+        .info-table th { background-color: #f9fafb; font-weight: 600; color: #374151; width: 30%; }
+        .faq-item { border-bottom: 1px solid #e5e7eb; padding: 1rem 0; }
+        .faq-question { font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .faq-question::after { content: '\f078'; font-family: 'Font Awesome 6 Free'; font-weight: 900; transition: transform 0.3s ease; }
+        .faq-item.open .faq-question::after { transform: rotate(180deg); }
+        .faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.5s ease; color: #4b5563; }
+        .faq-item.open .faq-answer { margin-top: 0.75rem; max-height: 500px; }
+    </style>
+</head>
+<body>
+    <div id="header-placeholder"></div>
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="content-wrapper">
+            <div class="text-center mb-8">
+                <h1 class="text-3xl md:text-4xl post-title" id="post-title">Loading...</h1>
+                <p class="text-gray-600 text-lg" id="post-subtitle"></p>
+            </div>
+            <div id="main-content-area">
+                <!-- All sections are dynamically generated here -->
+            </div>
+        </div>
+    </main>
+    <div id="footer-placeholder"></div>
+    <script src="main.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        (async () => {
+            // --- HELPER FUNCTIONS to render different data types ---
+            function renderSummaryTable(summaryObject, title) {
+                if (!summaryObject || Object.keys(summaryObject).length === 0) return '';
+                let tableHTML = `<div class="overflow-x-auto mb-8"><table class="w-full text-sm text-left text-gray-500 info-table">`;
+                if(title) {
+                    tableHTML += `<caption class="p-4 text-lg font-semibold text-left text-gray-900 bg-gray-50">${title}</caption>`;
+                }
+                tableHTML += `<tbody>`;
+                for (const key in summaryObject) {
+                    if (summaryObject[key] !== null) {
+                        tableHTML += `<tr class="bg-white"><th scope="row">${key}</th><td>${summaryObject[key]}</td></tr>`;
+                    }
+                }
+                tableHTML += `</tbody></table></div>`;
+                return tableHTML;
+            }
+
+            function renderStepList(stepArray, title) {
+                if (!stepArray || stepArray.length === 0) return '';
+                let listHTML = `<div class="hidden" id="${title.toLowerCase().replace(/ /g, '-')}-section">`;
+                listHTML += `<h2 class="section-title">${title}</h2>`;
+                listHTML += `<div class="text-gray-700 space-y-3 p-4 bg-gray-50 rounded-lg">`;
+                stepArray.forEach(step => {
+                    listHTML += `<p><i class="fas fa-check-circle text-green-500 mr-2"></i>${step}</p>`;
+                });
+                listHTML += `</div></div>`;
+                return listHTML;
+            }
+
+            function renderNestedList(listObject, title) {
+                 if (!listObject || Object.keys(listObject).length === 0) return '';
+                 let html = `<div class="hidden" id="${title.toLowerCase().replace(/ /g, '-')}-section"><h2 class="section-title">${title}</h2><div class="p-4 bg-gray-50 rounded-lg"><ul class="list-disc list-inside space-y-2 pl-4 text-left">`;
+                for (const key in listObject) {
+                    const value = listObject[key];
+                    const formattedKey = key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+                    if (Array.isArray(value)) {
+                        html += `<li><strong>${formattedKey}:</strong><ul class="list-decimal list-inside pl-4">${value.map(item => `<li>${item}</li>`).join('')}</ul></li>`;
+                    } else {
+                        html += `<li><strong>${formattedKey}:</strong> ${value || 'Not specified'}</li>`;
+                    }
+                }
+                html += '</ul></div></div>';
+                return html;
+            }
+            
+            function renderLinks(linksObject) {
+                if (!linksObject || Object.keys(linksObject).length === 0) return '';
+                let linksHTML = `<h2 class="section-title">Important Links</h2><div class="grid grid-cols-1 sm:grid-cols-2 gap-4">`;
+                const linkConfig = {'download': '#c0392b', 'result': '#c0392b', 'admit card': '#dc2626', 'answer key': '#7e22ce', 'official website': '#2980b9', 'apply online': '#27ae60'};
+                for (const [text, url] of Object.entries(linksObject)) {
+                    if(url){
+                        const key = text.toLowerCase(); let color = '#34495e';
+                        for(const k in linkConfig) { if(key.includes(k)) { color = linkConfig[k]; break; } }
+                        linksHTML += `<a href="${url}" class="link-button" style="background-color: ${color};" target="_blank" rel="noopener noreferrer"><i class="fas fa-link mr-3"></i>${text}</a>`;
+                    }
+                }
+                linksHTML += `<a href="#" class="link-button" style="background-color: #0088cc;"><i class="fab fa-telegram-plane mr-3"></i>Join Telegram</a>`;
+                linksHTML += `<a href="#" class="link-button" style="background-color: #27ae60;"><i class="fas fa-mobile-alt mr-3"></i>Download App</a>`;
+                linksHTML += `</div>`;
+                return linksHTML;
+            }
+
+            function renderFaqs(faqArray) {
+                if (!faqArray || faqArray.length === 0) return '';
+                let faqHTML = `<div class="hidden" id="faq-section"><h2 class="section-title">Frequently Asked Questions</h2><div id="faq-container" class="p-4 bg-gray-50 rounded-lg">`;
+                faqArray.forEach(item => {
+                    if (item.question && item.answer) {
+                        faqHTML += `<div class="faq-item"><p class="faq-question">${item.question}</p><div class="faq-answer"><p class="p-2">${item.answer}</p></div></div>`;
+                    }
+                });
+                faqHTML += `</div></div>`;
+                // Only return HTML if there were valid FAQs
+                return faqHTML.includes('faq-item') ? faqHTML : '';
+            }
+
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                const postId = urlParams.get('id');
+                if (!postId) { document.getElementById('post-title').textContent = "Post Not Found."; return; }
+                const response = await fetch('data.json');
+                const masterData = await response.json();
+                
+                let post = null;
+                for (const category in masterData) { // Find the post in ANY category
+                    if (Array.isArray(masterData[category])) {
+                        const foundPost = masterData[category].find(item => item.id === postId);
+                        if (foundPost) { post = foundPost; break; }
+                    }
+                }
+                
+                if (!post || !post.details) { document.getElementById('post-title').textContent = "Post Not Found"; return; }
+                
+                const details = post.details;
+                document.title = `${post.title} - AapkaRojgar.com`;
+                document.getElementById('post-title').textContent = details.post_name || post.title;
+                document.getElementById('post-subtitle').textContent = details.post_subtitle || '';
+                
+                const mainContentArea = document.getElementById('main-content-area');
+                let finalHTML = '';
+
+                // --- Build page dynamically based on available data ---
+                finalHTML += renderSummaryTable(details.result_summary, 'Result Summary');
+                finalHTML += renderSummaryTable(details.admit_card_summary, 'Admit Card Summary');
+                finalHTML += renderSummaryTable(details.answer_key_summary, 'Answer Key Summary');
+                finalHTML += renderSummaryTable(details.exam_pattern_summary, 'Exam Pattern');
+                finalHTML += renderSummaryTable(details.admission_summary, 'Admission Summary');
+                finalHTML += renderSummaryTable(details.document_summary, 'Document Summary');
+                
+                finalHTML += renderStepList(details.how_to_check_result, 'How to Check Result');
+                finalHTML += renderStepList(details.how_to_download, 'How to Download');
+                finalHTML += renderStepList(details.how_to_download_and_challenge, 'How to Download & Challenge');
+                
+                finalHTML += renderNestedList(details.syllabus_details, 'Syllabus Details');
+
+                finalHTML += renderLinks(details.important_links);
+                finalHTML += renderFaqs(details.faq);
+                
+                mainContentArea.innerHTML = finalHTML;
+
+                // Un-hide sections that now have content
+                mainContentArea.querySelectorAll('.hidden').forEach(el => el.classList.remove('hidden'));
+                
+                // Add click listener for FAQs if they exist
+                const faqContainer = document.getElementById('faq-container');
+                if(faqContainer) {
+                    faqContainer.addEventListener('click', e => e.target.closest('.faq-item')?.classList.toggle('open'));
+                }
+
+            } catch (error) {
+                console.error('Failed to load post details:', error);
+                document.getElementById('post-title').textContent = "Error loading content.";
+            }
+        })();
+    });
+    </script>
+</body>
+</html>

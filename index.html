@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AapkaRojgar.com - Latest Sarkari Jobs, Results, Admit Card</title>
+    <link rel="icon" type="image/png" href="favic.png">
+    <link rel="apple-touch-icon" href="favic.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #eef2f5; }
+        .main-title-link { text-decoration: none; }
+        .main-title { font-weight: 700; color: #1e3a8a; }
+        .info-box { background-color: #ffffff; border: 1px solid #d1d5db; border-radius: 0.5rem; overflow: hidden; margin-bottom: 1.5rem; display: flex; flex-direction: column; transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); z-index: 10; }
+        .info-box.maximized { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) !important; width: 95vw; max-width: 800px; height: 90vh; z-index: 100; }
+        .info-box.faded { opacity: 0.2; pointer-events: none; }
+        .box-header { color: white; padding: 0.75rem 1rem; font-size: 1.125rem; font-weight: 700; text-align: center; display: flex; align-items: center; justify-content: center; position: relative; }
+        .box-header span { flex-grow: 1; }
+        .box-content { flex-grow: 1; }
+        .info-box.maximized .box-content { overflow-y: auto; }
+        .box-content ul { padding: 0.5rem 0; }
+        .box-content li { padding: 0.6rem 1.25rem; border-bottom: 1px solid #f3f4f6; }
+        .box-content li:last-child { border-bottom: none; }
+        .box-content a { color: #1e3a8a; font-weight: 500; text-decoration: none; transition: color 0.2s ease; }
+        .box-content a:hover { color: #dc2626; }
+        .new-badge { font-size: 0.65rem; font-weight: 700; color: #dc2626; margin-left: 0.5rem; background-color: #fee2e2; padding: 2px 6px; border-radius: 99px; vertical-align: middle; }
+        .box-footer { padding: 0.75rem 1.25rem; text-align: center; border-top: 1px solid #e5e7eb; }
+        .box-footer a { font-weight: 600; color: #4b5563; text-decoration: none; transition: color 0.2s ease; cursor: pointer; }
+        .box-footer a:hover { color: #111827; }
+        .close-box-btn { display: none; background: rgba(255,255,255,0.2); border-radius: 99px; width: 1.75rem; height: 1.75rem; color: white; transition: all 0.2s ease; position: absolute; right: 0.75rem; }
+        .close-box-btn:hover { background: rgba(255,255,255,0.4); }
+        .info-box.maximized .close-box-btn { display: inline-flex; align-items: center; justify-content: center; }
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 50; opacity: 0; pointer-events: none; transition: opacity 0.5s ease; }
+        .overlay.active { opacity: 1; pointer-events: auto; }
+        .utility-section .tool-link { display: flex; align-items: center; padding: 0.75rem; border-radius: 0.375rem; }
+        .utility-section .tool-link:hover { background-color: #f3f4f6; }
+        .social-icon-btn { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 50%; color: white; transition: opacity 0.2s; }
+        .social-icon-btn:hover { opacity: 0.85; }
+        .nav-link.active { background-color: #1e3a8a; color: white; }
+    </style>
+</head>
+<body>
+    <div id="overlay" class="overlay"></div>
+    
+    <div id="header-placeholder"></div>
+
+    <main class="container mx-auto px-4 mt-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            
+            <div class="info-box maximizable">
+                <div class="box-header" style="background-color: #1d4ed8;"><span>Latest Jobs</span><button class="close-box-btn"><i class="fas fa-times"></i></button></div>
+                <div class="box-content"><ul id="latest-jobs-list" data-key="latest_jobs"></ul></div>
+                <div class="box-footer"><a class="view-more-btn">View More &rarr;</a></div>
+            </div>
+
+            <div class="info-box maximizable">
+                <div class="box-header" style="background-color: #dc2626;"><span>Admit Card</span><button class="close-box-btn"><i class="fas fa-times"></i></button></div>
+                <div class="box-content"><ul id="admit-card-list" data-key="admit_card"></ul></div>
+                <div class="box-footer"><a class="view-more-btn">View More &rarr;</a></div>
+            </div>
+
+            <div class="info-box maximizable">
+                <div class="box-header" style="background-color: #16a34a;"><span>Result</span><button class="close-box-btn"><i class="fas fa-times"></i></button></div>
+                <div class="box-content"><ul id="result-list" data-key="result"></ul></div>
+                <div class="box-footer"><a class="view-more-btn">View More &rarr;</a></div>
+            </div>
+            
+            <div class="info-box maximizable">
+                <div class="box-header" style="background-color: #d97706;"><span>Last Day to Apply</span><button class="close-box-btn"><i class="fas fa-times"></i></button></div>
+                <div class="box-content"><ul id="last-day-list" data-key="last_day_to_apply"></ul></div>
+                <div class="box-footer"><a class="view-more-btn">View More &rarr;</a></div>
+            </div>
+
+            <div class="info-box maximizable">
+                <div class="box-header" style="background-color: #7e22ce;"><span>Answer Key</span><button class="close-box-btn"><i class="fas fa-times"></i></button></div>
+                <div class="box-content"><ul id="answer-key-list" data-key="answer_key"></ul></div>
+                <div class="box-footer"><a class="view-more-btn">View More &rarr;</a></div>
+            </div>
+            
+            <div class="info-box maximizable">
+                <div class="box-header" style="background-color: #ca8a04;"><span>Syllabus</span><button class="close-box-btn"><i class="fas fa-times"></i></button></div>
+                <div class="box-content"><ul id="syllabus-list" data-key="syllabus"></ul></div>
+                <div class="box-footer"><a class="view-more-btn">View More &rarr;</a></div>
+            </div>
+            
+            <div class="info-box maximizable">
+                <div class="box-header" style="background-color: #0891b2;"><span>Admission</span><button class="close-box-btn"><i class="fas fa-times"></i></button></div>
+                <div class="box-content"><ul id="admission-list" data-key="admission"></ul></div>
+                <div class="box-footer"><a class="view-more-btn">View More &rarr;</a></div>
+            </div>
+            
+            <div class="info-box maximizable">
+                <div class="box-header" style="background-color: #65a30d;"><span>Upcoming Jobs</span><button class="close-box-btn"><i class="fas fa-times"></i></button></div>
+                <div class="box-content"><ul id="upcoming-jobs-list" data-key="upcoming_jobs"></ul></div>
+                <div class="box-footer"><a class="view-more-btn">View More &rarr;</a></div>
+            </div>
+            
+            <div class="info-box maximizable">
+                <div class="box-header" style="background-color: #4b5563;"><span>Important Documents</span><button class="close-box-btn"><i class="fas fa-times"></i></button></div>
+                <div class="box-content"><ul id="documents-list" data-key="important_documents"></ul></div>
+                <div class="box-footer"><a class="view-more-btn">View More &rarr;</a></div>
+            </div>
+        </div>
+    </main>
+    
+    <div id="footer-placeholder"></div>
+    
+    <script src="main.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        (async () => {
+            const allBoxes = document.querySelectorAll('.info-box.maximizable');
+            const overlay = document.getElementById('overlay');
+            let masterData = null;
+
+            const isJobActive = (job) => {
+                if (!job.last_date) return true;
+                try {
+                    const today = new Date(); today.setHours(0, 0, 0, 0);
+                    const lastDate = new Date(job.last_date);
+                    if (isNaN(lastDate.getTime())) return true;
+                    return lastDate >= today;
+                } catch (e) { return true; }
+            };
+
+            const categoryToFileMap = {
+                'latest_jobs': 'latest-jobs', 'result': 'details-page', 'admit_card': 'details-page',
+                'answer_key': 'details-page', 'syllabus': 'details-page', 'admission': 'details-page',
+                'upcoming_jobs': 'details-page', 'important_documents': 'details-page'
+            };
+
+            const createListItemHTML = (item, dataKey, specialText = '') => {
+                const pageName = (dataKey === 'last_day_to_apply') ? categoryToFileMap['latest_jobs'] : categoryToFileMap[dataKey];
+                const url = `${pageName}.html?id=${item.id}`;
+                const newBadge = item.new ? '<span class="new-badge">NEW</span>' : '';
+                const specialLabel = specialText ? `<span class="text-red-600 font-bold ml-2">${specialText}</span>` : '';
+                return `<li><a href="${url}">${item.title}${newBadge}${specialLabel}</a></li>`;
+            };
+            
+            const populateList = (listElement, data, dataKey, count) => {
+                if (listElement && data) {
+                    listElement.innerHTML = data.slice(0, count).map(item => createListItemHTML(item, dataKey)).join('');
+                }
+            };
+
+            const populateLastDayList = (listElement, data, dataKey, count) => {
+                if (listElement && data) {
+                    const today = new Date(); today.setHours(0, 0, 0, 0);
+                    const tomorrow = new Date(today); tomorrow.setDate(today.getDate() + 1);
+                    const upcomingJobs = data.sort((a, b) => new Date(a.last_date) - new Date(b.last_date));
+                    listElement.innerHTML = upcomingJobs.slice(0, count).map(item => {
+                        const lastDate = new Date(item.last_date); lastDate.setHours(0,0,0,0);
+                        let specialText = '';
+                        if (lastDate.getTime() === today.getTime()) specialText = '(Today)';
+                        else if (lastDate.getTime() === tomorrow.getTime()) specialText = '(Tomorrow)';
+                        return createListItemHTML(item, dataKey, specialText);
+                    }).join('');
+                }
+            };
+
+            const initializeDashboard = (data) => {
+                const activeJobs = (data['latest_jobs'] || []).filter(isJobActive);
+                allBoxes.forEach(box => {
+                    const listElement = box.querySelector('ul');
+                    if (listElement) {
+                        const dataKey = listElement.dataset.key;
+                        if (dataKey === 'latest_jobs') populateList(listElement, activeJobs, dataKey, 15);
+                        else if (dataKey === 'last_day_to_apply') populateLastDayList(listElement, activeJobs, dataKey, 15);
+                        else populateList(listElement, data[dataKey], dataKey, 15);
+                    }
+                });
+            };
+
+            const closeAllBoxes = () => {
+                allBoxes.forEach(box => box.classList.remove('maximized', 'faded'));
+                overlay.classList.remove('active');
+                document.body.style.overflow = '';
+                initializeDashboard(masterData); // Reset lists
+            };
+
+            try {
+                const response = await fetch('data.json'); 
+                masterData = await response.json();
+                initializeDashboard(masterData);
+            } catch (error) { console.error("Could not fetch data:", error); }
+
+            allBoxes.forEach(box => {
+                const footer = box.querySelector('.box-footer');
+                const closeBtn = box.querySelector('.close-box-btn');
+                if (footer) {
+                    footer.addEventListener('click', (e) => {
+                        if (e.target.matches('.view-more-btn') && !box.classList.contains('maximized')) {
+                            e.preventDefault();
+                            allBoxes.forEach(b => { if (b !== box) b.classList.add('faded'); });
+                            box.classList.add('maximized');
+                            overlay.classList.add('active');
+                            document.body.style.overflow = 'hidden';
+
+                            const listElement = box.querySelector('ul');
+                            const dataKey = listElement.dataset.key;
+                            let sourceData;
+                            if (dataKey === 'latest_jobs' || dataKey === 'last_day_to_apply') {
+                                sourceData = (masterData['latest_jobs'] || []).filter(isJobActive);
+                            } else {
+                                sourceData = masterData[dataKey] || [];
+                            }
+                            if(dataKey === 'last_day_to_apply') populateLastDayList(listElement, sourceData, dataKey, 50);
+                            else populateList(listElement, sourceData, dataKey, 50);
+                            
+                            const footerLink = e.target;
+                            const category = (dataKey === 'last_day_to_apply') ? 'latest_jobs' : dataKey;
+                            footerLink.href = `list-page.html?category=${category}`; 
+                            footerLink.textContent = `View All →`;
+                        }
+                    });
+                }
+                if (closeBtn) closeBtn.addEventListener('click', closeAllBoxes);
+            });
+            if (overlay) overlay.addEventListener('click', closeAllBoxes);
+        })();
+    });
+    </script>
+</body>
+</html>

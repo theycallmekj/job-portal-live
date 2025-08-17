@@ -1,0 +1,70 @@
+<header class="bg-white shadow-md">
+    <!-- Top bar with social links -->
+    <div class="bg-gray-800 text-white py-2">
+        <div class="container mx-auto px-4 flex justify-between items-center">
+            <div>
+                <span class="font-semibold text-sm">Follow Us:</span>
+                <a href="#" class="ml-2 text-lg hover:text-blue-400"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" class="ml-2 text-lg hover:text-blue-400"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="ml-2 text-lg hover:text-red-400"><i class="fab fa-youtube"></i></a>
+            </div>
+            <div class="flex items-center space-x-4">
+                <a href="#" class="social-icon-btn" style="background-color: #0088cc;" title="Join on Telegram"><i class="fab fa-telegram-plane text-lg"></i></a>
+                <a href="#" class="bg-blue-600 px-4 py-2 rounded-md font-semibold text-sm hover:bg-blue-700 transition-colors"><i class="fas fa-mobile-alt mr-2"></i>Download App</a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Title and Search -->
+    <div class="py-4 md:py-6">
+        <div class="container mx-auto px-4">
+            <a href="index.html" class="main-title-link flex flex-col sm:flex-row justify-center items-center">
+                <img src="ic.png" alt="AapkaRojgar.com Logo" class="h-24 sm:h-20 w-auto mb-2 sm:mb-0 sm:mr-4">
+                <div class="text-center">
+                    <h1 class="main-title text-3xl sm:text-4xl md:text-5xl">AapkaRojgar.com</h1>
+                    <p class="text-gray-600 text-sm sm:text-base mt-2">Connecting Government Careers</p>
+                </div>
+            </a>
+        </div>
+    </div>
+    <div class="pb-6 px-4">
+        <div class="container mx-auto max-w-2xl">
+            <div class="relative">
+                <input type="search" placeholder="Search for any job, result, admit card..." class="w-full border-2 border-gray-300 bg-white h-12 px-5 pr-16 rounded-full text-sm focus:outline-none focus:border-blue-500">
+                <button type="submit" class="absolute right-0 top-0 mt-3 mr-4">
+                    <i class="fas fa-search text-gray-400"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Navigation -->
+    <nav class="bg-gray-900 text-white">
+        <div class="container mx-auto px-4">
+            <div class="hidden md:flex justify-center">
+                <a href="index.html" class="nav-link px-4 py-3 font-semibold hover:bg-gray-700">Home</a>
+                <a href="list-page.html?category=latest_jobs" class="nav-link px-4 py-3 font-semibold hover:bg-gray-700">Latest Jobs</a>
+                <a href="list-page.html?category=result" class="nav-link px-4 py-3 font-semibold hover:bg-gray-700">Results</a>
+                <a href="list-page.html?category=admit_card" class="nav-link px-4 py-3 font-semibold hover:bg-gray-700">Admit Card</a>
+                <a href="list-page.html?category=answer_key" class="nav-link px-4 py-3 font-semibold hover:bg-gray-700">Answer Key</a>
+                <a href="list-page.html?category=syllabus" class="nav-link px-4 py-3 font-semibold hover:bg-gray-700">Syllabus</a>
+                <a href="list-page.html?category=admission" class="nav-link px-4 py-3 font-semibold hover:bg-gray-700">Admission</a>
+            </div>
+            <div class="md:hidden flex justify-between items-center py-2">
+                 <a href="index.html" class="text-white font-bold text-lg">Menu</a>
+                <button id="mobile-menu-button-placeholder" class="text-white focus:outline-none">
+                    <i class="fas fa-bars text-2xl"></i>
+                </button>
+            </div>
+        </div>
+         <div id="mobile-menu" class="hidden md:hidden">
+            <a href="index.html" class="block px-4 py-2 text-sm hover:bg-gray-700">Home</a>
+            <a href="list-page.html?category=latest_jobs" class="block px-4 py-2 text-sm hover:bg-gray-700">Latest Jobs</a>
+            <a href="list-page.html?category=result" class="block px-4 py-2 text-sm hover:bg-gray-700">Results</a>
+            <a href="list-page.html?category=admit_card" class="block px-4 py-2 text-sm hover:bg-gray-700">Admit Card</a>
+            <a href="list-page.html?category=answer_key" class="block px-4 py-2 text-sm hover:bg-gray-700">Answer Key</a>
+            <a href="list-page.html?category=syllabus" class="block px-4 py-2 text-sm hover:bg-gray-700">Syllabus</a>
+            <a href="list-page.html?category=admission" class="block px-4 py-2 text-sm hover:bg-gray-700">Admission</a>
+        </div>
+    </nav>
+</header>

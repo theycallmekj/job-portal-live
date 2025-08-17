@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Post Details - AapkaRojgar.com</title>
+    <link rel="icon" type="image/png" href="favic.png">
+    <link rel="apple-touch-icon" href="favic.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+        .content-wrapper { background-color: white; border-radius: 0.75rem; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); padding: 1.5rem 2rem; }
+        .post-title { color: #1e3a8a; font-weight: 700; margin-bottom: 0.5rem; }
+        .info-table th, .info-table td { padding: 0.75rem 1rem; border: 1px solid #e5e7eb; text-align: left; }
+        .info-table th { background-color: #f9fafb; font-weight: 600; color: #374151; width: 30%; }
+        .section-title { font-size: 1.5rem; font-weight: 700; color: white; text-align: center; padding: 0.75rem; background-color: #1e3a8a; border-radius: 0.5rem; margin-top: 2.5rem; margin-bottom: 1.5rem; }
+        .link-button { display: flex; align-items: center; justify-content: center; padding: 1rem; font-size: 1.25rem; font-weight: 700; border-radius: 0.5rem; text-decoration: none; color: white; transition: transform 0.2s ease; }
+        .link-button:hover { transform: translateY(-3px); }
+        .vacancy-table th, .vacancy-table td { border: 1px solid #d1d5db; padding: 0.75rem; text-align: center; }
+        .vacancy-table thead th { background-color: #1f2937; color: white; }
+        .faq-item { border-bottom: 1px solid #e5e7eb; padding: 1rem 0; }
+        .faq-question { font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .faq-question::after { content: '\f078'; font-family: 'Font Awesome 6 Free'; font-weight: 900; transition: transform 0.3s ease; }
+        .faq-item.open .faq-question::after { transform: rotate(180deg); }
+        .faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.5s ease; color: #4b5563; }
+        .faq-item.open .faq-answer { margin-top: 0.75rem; max-height: 500px; }
+    </style>
+</head>
+<body>
+    <div id="header-placeholder"></div>
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="content-wrapper">
+            <div class="text-center mb-8">
+                <h1 class="text-3xl md:text-4xl post-title" id="post-title">Loading...</h1>
+                <p class="text-gray-600 text-lg" id="post-subtitle"></p>
+            </div>
+            <div id="main-content-area">
+                <div id="summary-section" class="overflow-x-auto mb-8">
+                    <table class="w-full text-sm text-left text-gray-500 info-table">
+                        <caption class="p-4 text-lg font-semibold text-left text-gray-900 bg-gray-50">Recruitment Summary</caption>
+                        <tbody id="summary-table-body"></tbody>
+                    </table>
+                </div>
+                <div class="hidden" id="eligibility-section">
+                    <h2 class="section-title">Eligibility Criteria</h2>
+                    <div class="p-4 bg-gray-50 rounded-lg space-y-4" id="eligibility-content"></div>
+                </div>
+                <div class="hidden" id="vacancy-section">
+                    <h2 class="section-title">Vacancy Details</h2>
+                    <div id="vacancy-content"></div>
+                </div>
+                <div class="hidden" id="physical-standards-section">
+                    <h2 class="section-title">Physical Standards</h2>
+                    <div class="p-4 bg-gray-50 rounded-lg" id="physical-standards-content"></div>
+                </div>
+                <div class="hidden" id="how-to-fill-section">
+                    <h2 class="section-title">How to Fill Form</h2>
+                    <div class="text-gray-700 space-y-3 p-4 bg-gray-50 rounded-lg" id="how-to-fill-form-steps"></div>
+                </div>
+                <h2 class="section-title">Important Links</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="important-links-container"></div>
+                <div class="hidden" id="faq-section">
+                    <h2 class="section-title">Frequently Asked Questions</h2>
+                    <div id="faq-container" class="p-4 bg-gray-50 rounded-lg"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <div id="footer-placeholder"></div>
+    <script src="main.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        (async () => {
+            const isJobActive = (job) => !job.last_date ? true : new Date(job.last_date) >= new Date(new Date().setHours(0,0,0,0));
+            function renderObjectAsList(obj) {
+                let html = '<ul class="list-disc list-inside space-y-2 pl-4 text-left">';
+                for (const key in obj) {
+                    const value = obj[key];
+                    const formattedKey = key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+                    if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+                        html += `<li><strong>${formattedKey}:</strong>${renderObjectAsList(value)}</li>`;
+                    } else if (Array.isArray(value)) {
+                         html += `<li><strong>${formattedKey}:</strong><ul class="list-decimal list-inside pl-4">${value.map(item => `<li>${item}</li>`).join('')}</ul></li>`;
+                    } else {
+                        html += `<li><strong>${formattedKey}:</strong> ${value || 'Not specified'}</li>`;
+                    }
+                }
+                html += '</ul>';
+                return html;
+            }
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                const postId = urlParams.get('id');
+                if (!postId) { document.getElementById('post-title').textContent = "Post Not Found."; return; }
+                const response = await fetch('data.json');
+                const masterData = await response.json();
+                const post = masterData.latest_jobs?.find(item => item.id === postId);
+                if (!post || !post.details) { document.getElementById('post-title').textContent = "Post Not Found"; return; }
+                if (!isJobActive(post)) {
+                    document.title = `Job Expired - ${post.title}`;
+                    document.getElementById('post-title').textContent = "This Job Has Expired";
+                    document.getElementById('main-content-area').innerHTML = `<div class="text-center p-8 bg-red-50 rounded-lg"><h2 class="text-2xl font-bold text-red-700">Application Closed</h2><p class="text-gray-600 mt-2">The application period has ended.</p><a href="index.html" class="mt-6 inline-block bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700">View Other Jobs</a></div>`;
+                    return;
+                }
+                const details = post.details;
+                document.title = `${post.title} - AapkaRojgar.com`;
+                document.getElementById('post-title').textContent = details.post_name || post.title;
+                document.getElementById('post-subtitle').textContent = details.post_subtitle || '';
+                
+                // --- DYNAMICALLY BUILD THE ENTIRE PAGE ---
+                // 1. At a Glance Summary Table
+                const summary = details.at_a_glance_summary;
+                const summaryTableBody = document.getElementById('summary-table-body');
+                if (summary && Object.keys(summary).length > 0) {
+                    let summaryHTML = '';
+                    for (const key in summary) {
+                        if (summary[key] !== null) { summaryHTML += `<tr class="bg-white"><th scope="row">${key}</th><td>${summary[key]}</td></tr>`; }
+                    }
+                    summaryTableBody.innerHTML = summaryHTML;
+                } else { document.getElementById('summary-section').classList.add('hidden'); }
+                
+                // 2. Eligibility Criteria Section
+                if (details.eligibility_criteria && (details.eligibility_criteria.education?.length > 0 || details.eligibility_criteria.age_limit?.length > 0)) {
+                    document.getElementById('eligibility-section').classList.remove('hidden');
+                    let eligibilityHTML = '';
+                    if (details.eligibility_criteria.education?.length > 0) {
+                        eligibilityHTML += `<div><h3 class="font-bold text-lg text-gray-800">Educational Qualification</h3><ul class="list-disc list-inside text-gray-700 mt-2 space-y-1">${details.eligibility_criteria.education.map(item => `<li>${item}</li>`).join('')}</ul></div>`;
+                    }
+                    if (details.eligibility_criteria.age_limit?.length > 0) {
+                        eligibilityHTML += `<div><h3 class="font-bold text-lg text-gray-800">Age Limit</h3><ul class="list-disc list-inside text-gray-700 mt-2 space-y-1">${details.eligibility_criteria.age_limit.map(item => `<li>${item}</li>`).join('')}</ul></div>`;
+                    }
+                    document.getElementById('eligibility-content').innerHTML = eligibilityHTML;
+                }
+                
+                // 3. Vacancy Details Section
+                if (details.vacancy_details) {
+                    document.getElementById('vacancy-section').classList.remove('hidden');
+                    let vacancyHTML = '';
+                    if(details.vacancy_details.total_posts_summary) { vacancyHTML += `<p class="text-center text-gray-700 mb-4 font-semibold">${details.vacancy_details.total_posts_summary}</p>`; }
+                    if (details.vacancy_details.breakdown?.length > 0) {
+                        const breakdown = details.vacancy_details.breakdown;
+                        const headers = Object.keys(breakdown[0]);
+                        let tableHTML = `<div class="overflow-x-auto"><table class="w-full text-sm vacancy-table"><thead class="text-xs uppercase"><tr>${headers.map(h => `<th>${h.replace(/_/g, ' ')}</th>`).join('')}</tr></thead><tbody>`;
+                        breakdown.forEach(row => { tableHTML += `<tr class="bg-white hover:bg-gray-50">${headers.map(h => `<td>${row[h] || ''}</td>`).join('')}</tr>`; });
+                        vacancyHTML += tableHTML + `</tbody></table></div>`;
+                    }
+                    document.getElementById('vacancy-content').innerHTML = vacancyHTML;
+                }
+
+                // 4. Physical Standards Section
+                if (details.physical_standards && Object.keys(details.physical_standards).length > 0) {
+                    document.getElementById('physical-standards-section').classList.remove('hidden');
+                    document.getElementById('physical-standards-content').innerHTML = renderObjectAsList(details.physical_standards);
+                }
+
+                // 5. How to Fill Form Section
+                if (details.how_to_fill_form?.length > 0) {
+                    document.getElementById('how-to-fill-section').classList.remove('hidden');
+                    document.getElementById('how-to-fill-form-steps').innerHTML = details.how_to_fill_form.map(step => `<p><i class="fas fa-check-circle text-green-500 mr-2"></i>${step}</p>`).join('');
+                }
+
+                // 6. Important Links
+                if (details.important_links) {
+                    const linksContainer = document.getElementById('important-links-container');
+                    let linksHTML = '';
+                    const linkConfig = {'apply online': '#27ae60', 'notification': '#c0392b', 'syllabus': '#8e44ad', 'official website': '#2980b9'};
+                    for (const [text, url] of Object.entries(details.important_links)) {
+                        if(url){
+                            const key = text.toLowerCase(); let color = '#34495e';
+                            for(const k in linkConfig) { if(key.includes(k)) { color = linkConfig[k]; break; } }
+                            linksHTML += `<a href="${url}" class="link-button" style="background-color: ${color};" target="_blank" rel="noopener noreferrer"><i class="fas fa-link mr-3"></i>${text}</a>`;
+                        }
+                    }
+                    linksHTML += `<a href="#" class="link-button" style="background-color: #0088cc;"><i class="fab fa-telegram-plane mr-3"></i>Join Telegram</a>`;
+                    linksHTML += `<a href="#" class="link-button" style="background-color: #27ae60;"><i class="fas fa-mobile-alt mr-3"></i>Download App</a>`;
+                    linksContainer.innerHTML = linksHTML;
+                }
+
+                // 7. FAQ Section - ONLY renders if question AND answer exist
+                if (details.faq?.length > 0) {
+                    const faqContainer = document.getElementById('faq-container');
+                    let faqHTML = '';
+                    details.faq.forEach(item => {
+                        if (item.question && item.answer) { // Bulletproof check
+                            faqHTML += `<div class="faq-item"><p class="faq-question">${item.question}</p><div class="faq-answer"><p class="p-2">${item.answer}</p></div></div>`;
+                        }
+                    });
+                    if (faqHTML) { // Only show section if there are valid FAQs
+                        document.getElementById('faq-section').classList.remove('hidden');
+                        faqContainer.innerHTML = faqHTML;
+                        faqContainer.addEventListener('click', e => e.target.closest('.faq-item')?.classList.toggle('open'));
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to load post details:', error);
+                document.getElementById('post-title').textContent = "Error loading content.";
+            }
+        })();
+    });
+    </script>
+</body>
+</html>
