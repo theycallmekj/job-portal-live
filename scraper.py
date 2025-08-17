@@ -1,4 +1,4 @@
-# AapkaRojgar Tools - Automated JSON Content Scraper (V33.0 - The Complete System)
+# AapkaRojgar Tools - Automated JSON Content Scraper (V33.1 - Final Correction)
 
 import requests
 from bs4 import BeautifulSoup
@@ -26,7 +26,10 @@ GROUPING_SIMILARITY_THRESHOLD = 0.75
 
 load_dotenv()
 GEMINI_API_KEY = os.getenv("GOOGLE_API_KEY")
-GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-1.5-flash")
+
+# --- THIS IS THE ONLY CHANGE ---
+# The model name is not a secret, so we can set it directly in the code.
+GEMINI_MODEL = "gemini-2.5-flash-lite"
 
 # --- 2. AI Prompt (V33.0 - The Complete, Final Version) ---
 CUSTOM_PROMPT = """
@@ -294,7 +297,7 @@ def scrape_article_and_links(article_url):
 
 # --- 5. Main Execution ---
 def run_automation_cycle():
-    print(f"--- AapkaRojgar Scraper V33.0 (The Complete System) ---")
+    print(f"--- AapkaRojgar Scraper V33.1 (Final Correction) ---")
     print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Starting new scan...")
     run_archiving_process(DATA_JSON_FILE)
     website_urls = read_urls_from_file(URL_FILE)
